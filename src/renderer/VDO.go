@@ -7,7 +7,7 @@ import (
 // VertexDataObject ...
 type VertexDataObject struct {
 	// Vertex Array Object is array of buffers which contains data necessary for draw vertices
-	shader        *Shader
+	Shader        *Shader
 	vao           uint32
 	elementsCount int32
 	vboCount      uint32
@@ -16,7 +16,7 @@ type VertexDataObject struct {
 // LoadVertexDataObject constructor for VertexDataObject
 func LoadVertexDataObject(shader *Shader) *VertexDataObject {
 	var vdo VertexDataObject
-	vdo.shader = shader
+	vdo.Shader = shader
 	gl.GenVertexArrays(1, &vdo.vao)
 	return &vdo
 }
@@ -54,7 +54,7 @@ func (v *VertexDataObject) AddEBO(data []uint32, drawMode uint32) {
 
 // Render ...
 func (v *VertexDataObject) Render() {
-	v.shader.Use()
+	v.Shader.Use()
 	v.bind()
 	gl.DrawElements(gl.TRIANGLES, v.elementsCount, gl.UNSIGNED_INT, nil)
 }

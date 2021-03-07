@@ -28,7 +28,7 @@ func main() {
 		log.Fatal("Gl init error: ", err)
 	}
 
-	shader := renderer.LoadShader("../res/shaders/default.vert", "../res/shaders/default.frag")
+	shader := renderer.LoadShader("../res/shaders/defaultVertex.glsl", "../res/shaders/defaultFragment.glsl")
 
 	vertices := []float32{
 		-0.5, -0.5, 0.0, // bottom left
@@ -39,33 +39,34 @@ func main() {
 
 	indices := []uint32{ // note that we start from 0!
 		0, 1, 2, // first triangle
-		2, 3, 1, // second triangle
-		0, 1, 3, // first triangle
+		0, 2, 3, // first triangle
 	}
-	vertices1 := []float32{
-		0.5, -1, 0,
-		0.5, -0.5, 0,
-		1, -0.5, 0,
-		1, -1, 0,
-	}
-	indices2 := []uint32{ // note that we start from 0!
-		0, 1, 3, // first triangle
-		1, 2, 3, // second triangle
-	}
+	// vertices1 := []float32{
+	// 	// positions         // colors
+	// 	0.5, -0.5, 0.0, 1.0, 0.0, 0.0, // bottom right
+	// 	-0.5, -0.5, 0.0, 0.0, 1.0, 0.0, // bottom left
+	// 	0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // top
+	// }
+	// indices2 := []uint32{ // note that we start from 0!
+	// 	0, 1, 3, // first triangle
+	// 	1, 2, 3, // second triangle
+	// }
 	vdo := renderer.LoadVertexDataObject(shader)
 	vdo.AddVBO(vertices, gl.STATIC_DRAW)
 	vdo.AddEBO(indices, gl.STATIC_DRAW)
-	vdo1 := renderer.LoadVertexDataObject(shader)
-	vdo1.AddVBO(vertices1, gl.STATIC_DRAW)
-	vdo1.AddEBO(indices2, gl.STATIC_DRAW)
-
+	// vdo1 := renderer.LoadVertexDataObject(shader)
+	// vdo1.AddVBO(vertices1, gl.STATIC_DRAW)
+	// vdo1.AddEBO(indices2, gl.STATIC_DRAW)
 
 	var nrAttrbutes int32
 	gl.GetIntegerv(gl.MAX_VERTEX_ATTRIBS, &nrAttrbutes)
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
 	fmt.Println("Maximum nr of vertex attributes supported: ", nrAttrbutes)
-	gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
-	gl.ClearColor(0, 0, 0, 1)
+
+	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
+	gl.ClearColor(0, 0, 0.3, 1)
+	timer := sdl.GetTicks()
+	// vertexColorLocation := gl.GetUniformLocation(vdo.Shader.ShaderProgram, gl.Str("ourColor"+"\x00"))
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
@@ -76,8 +77,11 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		vdo.Render()
-		vdo1.Render()
-		
+		// vdo1.Render()
+		updateTimer := sdl.GetTicks()
+		if updateTimer-timer > 1000 {
+			timer = updateTimer
+		}
 		window.GLSwap()
 	}
 }
