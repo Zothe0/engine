@@ -6,3 +6,5 @@ github.com/go-gl/glfw/v3.3/glfw v0.0.0-20201108214237-06ea97f0c265 h1:BcbKYUZo/T
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20201108214237-06ea97f0c265/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/ungerik/go3d v0.0.0-20200217190927-d82aececefe9 h1:UB8711q6/u7duvOYgQdAk94MBYndjD/aESY1j+kjI2E=
 github.com/ungerik/go3d v0.0.0-20200217190927-d82aececefe9/go.mod h1:K+51Zn76DRybk/9H3P4uJot7sq8cF8vaLIrqTApkqVo=
+github.com/veandco/go-sdl2 v0.4.5 h1:GFIjMabK7y2XWpr9sGvN7RDKHt7vrA7XPTUW60eOw+Y=
+github.com/veandco/go-sdl2 v0.4.5/go.mod h1:OROqMhHD43nT4/i9crJukyVecjPNYYuCofep6SNiAjY=
