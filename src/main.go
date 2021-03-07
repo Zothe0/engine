@@ -36,27 +36,33 @@ func main() {
 		0.5, 0.5, 0.0, // top right
 		0.5, -0.5, 0.0, // bottom right
 	}
+	colors := []float32{
+		-0.5, -0.5, 1.0, // bottom left
+		-0.5, 0.5, 0.0, // top left
+		0.5, 0.5, 1.0, // top right
+		0.5, -0.5, 0.0, // bottom right
+	}
 
 	indices := []uint32{ // note that we start from 0!
 		0, 1, 2, // first triangle
 		0, 2, 3, // first triangle
 	}
-	// vertices1 := []float32{
-	// 	// positions         // colors
-	// 	0.5, -0.5, 0.0, 1.0, 0.0, 0.0, // bottom right
-	// 	-0.5, -0.5, 0.0, 0.0, 1.0, 0.0, // bottom left
-	// 	0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // top
-	// }
-	// indices2 := []uint32{ // note that we start from 0!
-	// 	0, 1, 3, // first triangle
-	// 	1, 2, 3, // second triangle
-	// }
+	vertices1 := []float32{
+		// positions         // colors
+		0.5, 0.5, 0.0, 1.0, 0.0, 0.0, // bottom right
+		-0.5, 0.5, 0.0, 0.0, 1.0, 0.0, // bottom left
+		0.0, -0.5, 0.0, 0.0, 0.0, 1.0, // top
+	}
+	indices2 := []uint32{ // note that we start from 0!
+		0, 1, 2,// first triangle
+	}
 	vdo := renderer.LoadVertexDataObject(shader)
-	vdo.AddVBO(vertices, gl.STATIC_DRAW)
+	vdo.AddVBO(vertices, gl.STATIC_DRAW, 1)
+	vdo.AddVBO(colors, gl.STATIC_DRAW, 1)
 	vdo.AddEBO(indices, gl.STATIC_DRAW)
-	// vdo1 := renderer.LoadVertexDataObject(shader)
-	// vdo1.AddVBO(vertices1, gl.STATIC_DRAW)
-	// vdo1.AddEBO(indices2, gl.STATIC_DRAW)
+	vdo1 := renderer.LoadVertexDataObject(shader)
+	vdo1.AddVBO(vertices1, gl.STATIC_DRAW, 2)
+	vdo1.AddEBO(indices2, gl.STATIC_DRAW)
 
 	var nrAttrbutes int32
 	gl.GetIntegerv(gl.MAX_VERTEX_ATTRIBS, &nrAttrbutes)
@@ -76,8 +82,8 @@ func main() {
 		}
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		vdo.Render()
-		// vdo1.Render()
+		// vdo.Render()
+		vdo1.Render()
 		updateTimer := sdl.GetTicks()
 		if updateTimer-timer > 1000 {
 			timer = updateTimer

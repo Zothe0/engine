@@ -22,17 +22,20 @@ func LoadVertexDataObject(shader *Shader) *VertexDataObject {
 }
 
 // AddVBO ...
-func (v *VertexDataObject) AddVBO(data []float32, drawMode uint32) {
+func (v *VertexDataObject) AddVBO(data []float32, drawMode uint32, datasetCount int) {
 	v.bind()
 	var buffer uint32
 	
 	gl.GenBuffers(1, &buffer)
 	gl.BindBuffer(gl.ARRAY_BUFFER, buffer)
 	gl.BufferData(gl.ARRAY_BUFFER, len(data)*4, gl.Ptr(data), drawMode)
-
-	gl.EnableVertexAttribArray(v.vboCount)
-	gl.VertexAttribPointer(v.vboCount, 3, gl.FLOAT, false, 3*4, nil)
-	v.vboCount++
+	stride:= int32(3*4*datasetCount)
+	for i := 0; i < datasetCount; i++ {
+		gl.EnableVertexAttribArray(v.vboCount)
+		offset := i*3*4
+		gl.VertexAttribPointer(v.vboCount, 3, gl.FLOAT, false, stride, gl.PtrOffset(offset))
+		v.vboCount++
+	}
 
 	v.unbind()
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
@@ -67,4 +70,8 @@ func (v *VertexDataObject) bind() {
 // Unbind VAO
 func (v *VertexDataObject) unbind() {
 	gl.BindVertexArray(0)
+}
+
+type BufferLayout struct{
+	
 }
