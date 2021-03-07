@@ -15,16 +15,16 @@ type Shader struct {
 }
 
 // LoadShader constructor for shader
-func LoadShader(vertexPath, fragmentPath string) Shader {
+func LoadShader(vertexPath, fragmentPath string) *Shader {
 	var shader Shader
 	shader.vertexSource = readShader(vertexPath)
 	shader.fragmentSource = readShader(fragmentPath)
 	shader.loadShaderProgram()
-	return shader
+	return &shader
 }
 
 // Compile shaders needs in one scope with the shader program linking
-func (s Shader) loadShaderProgram() {
+func (s *Shader) loadShaderProgram() {
 	// Compile shaders
 	fragmentShader := setShaderSource(s.fragmentSource, gl.FRAGMENT_SHADER)
 	vertexShader := setShaderSource(s.vertexSource, gl.VERTEX_SHADER)
@@ -62,7 +62,7 @@ func (s Shader) loadShaderProgram() {
 }
 
 // Use shader program
-func (s Shader) Use() {
+func (s *Shader) Use() {
 	gl.UseProgram(s.shaderProgram)
 }
 
