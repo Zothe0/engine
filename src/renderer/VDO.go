@@ -9,31 +9,33 @@ type VertexDataObject struct {
 	// Vertex Array Object is array of buffers which contains data necessary for draw vertices
 	Shader        *Shader
 	vao           uint32
+	texture       uint32
 	elementsCount int32
 	vboCount      uint32
 }
 
 // LoadVertexDataObject constructor for VertexDataObject
-func LoadVertexDataObject(shader *Shader) *VertexDataObject {
+func LoadVertexDataObject(shader *Shader, texture uint32) *VertexDataObject {
 	var vdo VertexDataObject
 	vdo.Shader = shader
+	vdo.texture = texture
 	gl.GenVertexArrays(1, &vdo.vao)
 	return &vdo
 }
 
 // AddVBO ...
-func (v *VertexDataObject) AddVBO(data []float32, drawMode uint32, datasetCount int) {
+func (v *VertexDataObject) AddVBO(data []float32, size int32, drawMode uint32, datasetCount int) {
 	v.bind()
 	var buffer uint32
-	
+
 	gl.GenBuffers(1, &buffer)
 	gl.BindBuffer(gl.ARRAY_BUFFER, buffer)
 	gl.BufferData(gl.ARRAY_BUFFER, len(data)*4, gl.Ptr(data), drawMode)
-	stride:= int32(3*4*datasetCount)
+	// stride := int32(3 * 4 * datasetCount)
 	for i := 0; i < datasetCount; i++ {
 		gl.EnableVertexAttribArray(v.vboCount)
-		offset := i*3*4
-		gl.VertexAttribPointer(v.vboCount, 3, gl.FLOAT, false, stride, gl.PtrOffset(offset))
+		offset := i * 3 * 4
+		gl.VertexAttribPointer(v.vboCount, size, gl.FLOAT, false, 0, gl.PtrOffset(offset))
 		v.vboCount++
 	}
 
@@ -58,6 +60,7 @@ func (v *VertexDataObject) AddEBO(data []uint32, drawMode uint32) {
 // Render ...
 func (v *VertexDataObject) Render() {
 	v.Shader.Use()
+	gl.BindTexture(gl.TEXTURE_2D, v.texture)
 	v.bind()
 	gl.DrawElements(gl.TRIANGLES, v.elementsCount, gl.UNSIGNED_INT, nil)
 }
@@ -72,6 +75,5 @@ func (v *VertexDataObject) unbind() {
 	gl.BindVertexArray(0)
 }
 
-type BufferLayout struct{
-	
+type BufferLayout struct {
 }
