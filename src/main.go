@@ -8,8 +8,7 @@ import (
 	"rpg/src/renderer"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
-	"github.com/ungerik/go3d/mat4"
-	"github.com/ungerik/go3d/vec4"
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -37,10 +36,8 @@ func main() {
 		0, 1, // top left
 		1, 1, // top right
 		1, 0, // bottom right
-		// 1, 1, // top right
-		// 0, 0, // bottom left
 	}
-	bytes, width, height := LoadImage("../res/textures/test1.png")
+	bytes, width, height := LoadImage("../res/textures/flint.png")
 	var texture uint32
 	gl.GenTextures(1, &texture)
 	gl.BindTexture(gl.TEXTURE_2D, texture)
@@ -57,47 +54,25 @@ func main() {
 		0.5, 0.5, 0.0, // top right
 		0.5, -0.5, 0.0, // bottom right
 	}
-	// colors := []float32{
-	// 	-0.5, -0.5, 1.0, // bottom left
-	// 	-0.5, 0.5, 0.0, // top left
-	// 	0.5, 0.5, 1.0, // top right
-	// 	0.5, -0.5, 0.0, // bottom right
-	// }
 
 	indices := []uint32{ // note that we start from 0!
 		0, 1, 2, // first triangle
 		2, 3, 0, // first triangle
 	}
-	// vertices1 := []float32{
-	// 	// positions         // colors
-	// 	-0.5, -0.5, 0.0, 1.0, 0.0, 0.0, // bottom  left
-	// 	0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // top
-	// 	0.5, -0.5, 0.0, 0.0, 1.0, 0.0, // bottom right
-	// }
-	// indices2 := []uint32{ // note that we start from 0!
-	// 	0, 1, 2, // first triangle
-	// }
 	vdo := renderer.LoadVertexDataObject(shader, texture)
 	vdo.AddVBO(vertices, 3, gl.STATIC_DRAW, 1)
 	vdo.AddVBO(texCoords, 2, gl.STATIC_DRAW, 1)
 	vdo.AddEBO(indices, gl.STATIC_DRAW)
-	// vdo1 := renderer.LoadVertexDataObject(shader, texture)
-	// vdo1.AddVBO(vertices1, gl.STATIC_DRAW, 2)
-	// vdo1.AddVBO(texCoords, gl.STATIC_DRAW, 1)
-	// vdo1.AddEBO(indices2, gl.STATIC_DRAW)
 
-	var nrAttrbutes int32
-	gl.GetIntegerv(gl.MAX_VERTEX_ATTRIBS, &nrAttrbutes)
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
-	fmt.Println("Maximum nr of vertex attributes supported: ", nrAttrbutes)
 
-	var vecT *vec4.T = &vec4.T{1, 0, 0, 1}
-	transMat := &mat4.Ident
-	transMat = transMat.AssignZRotation(90)
-	transMat.Scale(0.5)
-	fmt.Println(vecT)
-	
-	gl.GetUniformLocation(shader.ShaderProgram, gl.Str("transform"+"/0x00"))
+	shader.Use()
+	trans := mgl32.Ident4()
+	// trans = mgl32.HomogRotate3DZ(mgl32.DegToRad(45)).Mul4(trans)
+	trans = mgl32.Translate3D(0.5, -0.5, 0).Mul4(trans)
+	m4 := [16]float32(trans)
+	transformLoc := gl.GetUniformLocation(shader.ShaderProgram, gl.Str("transform"+"\x00"))
+	gl.UniformMatrix4fv(transformLoc, 1, false, &m4[0])
 
 	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
 	gl.ClearColor(0, 0, 0.3, 1)
