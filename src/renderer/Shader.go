@@ -9,13 +9,13 @@ import (
 
 // Shader ...
 type Shader struct {
+	ID             uint32
 	vertexSource   string
 	fragmentSource string
-	ShaderProgram  uint32
 }
 
-// LoadShader constructor for shader
-func LoadShader(vertexPath, fragmentPath string) *Shader {
+// NewShader constructor for shader
+func NewShader(vertexPath, fragmentPath string) *Shader {
 	var shader Shader
 	shader.vertexSource = readShader(vertexPath)
 	shader.fragmentSource = readShader(fragmentPath)
@@ -26,8 +26,8 @@ func LoadShader(vertexPath, fragmentPath string) *Shader {
 // Compile shaders needs in one scope with the shader program linking
 func (s *Shader) loadShaderProgram() {
 	// Compile shaders
-	fragmentShader := setShaderSource(s.fragmentSource, gl.FRAGMENT_SHADER)
 	vertexShader := setShaderSource(s.vertexSource, gl.VERTEX_SHADER)
+	fragmentShader := setShaderSource(s.fragmentSource, gl.FRAGMENT_SHADER)
 	var status int32
 	gl.CompileShader(vertexShader)
 	gl.GetShaderiv(vertexShader, gl.COMPILE_STATUS, &status)
@@ -46,14 +46,14 @@ func (s *Shader) loadShaderProgram() {
 		log.Fatal(gl.GoStr(&infoLog))
 	}
 	// Linking
-	s.ShaderProgram = gl.CreateProgram()
-	gl.AttachShader(s.ShaderProgram, vertexShader)
-	gl.AttachShader(s.ShaderProgram, fragmentShader)
-	gl.LinkProgram(s.ShaderProgram)
-	gl.GetShaderiv(s.ShaderProgram, gl.LINK_STATUS, &status)
+	s.ID = gl.CreateProgram()
+	gl.AttachShader(s.ID, vertexShader)
+	gl.AttachShader(s.ID, fragmentShader)
+	gl.LinkProgram(s.ID)
+	gl.GetShaderiv(s.ID, gl.LINK_STATUS, &status)
 	if status == gl.FALSE {
 		var infoLog uint8
-		gl.GetProgramInfoLog(s.ShaderProgram, 512, nil, &infoLog)
+		gl.GetProgramInfoLog(s.ID, 512, nil, &infoLog)
 		log.Println(("Error: shaderProgram linking failed: "))
 		log.Fatal(gl.GoStr(&infoLog))
 	}
@@ -63,7 +63,7 @@ func (s *Shader) loadShaderProgram() {
 
 // Use shader program
 func (s *Shader) Use() {
-	gl.UseProgram(s.ShaderProgram)
+	gl.UseProgram(s.ID)
 }
 
 func readShader(path string) string {
