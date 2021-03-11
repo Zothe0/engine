@@ -18,8 +18,8 @@ type Texture struct {
 }
 
 // NewTexture constructor
-func NewTexture(path string, minFilter, magFilter, wrapMode int32) *Texture {
-	texture := new(Texture)
+func NewTexture(path string, minFilter, magFilter, wrapMode int32) (texture *Texture) {
+	texture = new(Texture)
 	pixels, w, h := loadImage(path)
 	gl.GenTextures(1, &texture.id)
 	texture.Bind()

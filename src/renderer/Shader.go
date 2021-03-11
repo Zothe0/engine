@@ -15,12 +15,12 @@ type Shader struct {
 }
 
 // NewShader constructor for shader
-func NewShader(vertexPath, fragmentPath string) *Shader {
-	var shader Shader
+func NewShader(vertexPath, fragmentPath string) (shader *Shader) {
+	shader = new(Shader)
 	shader.vertexSource = readShader(vertexPath)
 	shader.fragmentSource = readShader(fragmentPath)
 	shader.loadShaderProgram()
-	return &shader
+	return shader
 }
 
 // Compile shaders needs in one scope with the shader program linking

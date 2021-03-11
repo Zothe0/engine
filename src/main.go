@@ -49,16 +49,16 @@ func main() {
 		0, 1, 2, // first triangle
 		2, 3, 0, // first triangle
 	}
-	vdo := renderer.LoadVertexDataObject(shader, texture)
+	sprite := renderer.LoadSprite(shader, texture)
 	texture.Bind()
-	vdo.AddVBO(vertices, 3, gl.STATIC_DRAW, 1)
-	vdo.AddVBO(texCoords, 2, gl.STATIC_DRAW, 1)
-	vdo.AddEBO(indices, gl.STATIC_DRAW)
-	
-	vdo1 := renderer.LoadVertexDataObject(shader, texture1)
-	vdo1.AddVBO(vertices, 3, gl.STATIC_DRAW, 1)
-	vdo1.AddVBO(texCoords, 2, gl.STATIC_DRAW, 1)
-	vdo1.AddEBO(indices, gl.STATIC_DRAW)
+	sprite.AddVBO(&vertices, 3, gl.STATIC_DRAW)
+	sprite.AddVBO(&texCoords, 2, gl.STATIC_DRAW)
+	sprite.AddEBO(&indices, gl.STATIC_DRAW)
+
+	sprite1 := renderer.LoadSprite(shader, texture1)
+	sprite1.AddVBO(&vertices, 3, gl.STATIC_DRAW)
+	sprite1.AddVBO(&texCoords, 2, gl.STATIC_DRAW)
+	sprite1.AddEBO(&indices, gl.STATIC_DRAW)
 
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
 
@@ -76,11 +76,11 @@ func main() {
 
 		m4 := translateMatrix(0.5, -0.5)
 		gl.UniformMatrix4fv(gl.GetUniformLocation(shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
-		vdo.Render()
+		sprite.Render()
 
 		m4 = translateMatrix(-0.5, 0.5)
 		gl.UniformMatrix4fv(gl.GetUniformLocation(shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
-		vdo1.Render()
+		sprite1.Render()
 
 		// Timer
 		updateTimer := sdl.GetTicks()
