@@ -9,13 +9,13 @@ type VertexDataObject struct {
 	// Vertex Array Object is array of buffers which contains data necessary for draw vertices
 	Shader        *Shader
 	vao           uint32
-	texture       uint32
+	texture       *Texture
 	elementsCount int32
 	vboCount      uint32
 }
 
 // LoadVertexDataObject constructor for VertexDataObject
-func LoadVertexDataObject(shader *Shader, texture uint32) *VertexDataObject {
+func LoadVertexDataObject(shader *Shader, texture *Texture) *VertexDataObject {
 	var vdo VertexDataObject
 	vdo.Shader = shader
 	vdo.texture = texture
@@ -60,7 +60,7 @@ func (v *VertexDataObject) AddEBO(data []uint32, drawMode uint32) {
 // Render ...
 func (v *VertexDataObject) Render() {
 	v.Shader.Use()
-	gl.BindTexture(gl.TEXTURE_2D, v.texture)
+	v.texture.Bind()
 	v.bind()
 	gl.DrawElements(gl.TRIANGLES, v.elementsCount, gl.UNSIGNED_INT, nil)
 }

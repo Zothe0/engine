@@ -11,19 +11,20 @@ import (
 
 // Texture class
 type Texture struct {
-	ID          uint32
+	id          uint32
 	width       uint32
 	height      uint32
 	subTextures map[string]*subTexture
 }
 
 // NewTexture constructor
-func NewTexture(path string, textureCount uint32, minFilter, magFilter, wrapMode int32) *Texture {
+func NewTexture(path string, minFilter, magFilter, wrapMode int32) *Texture {
 	texture := new(Texture)
 	pixels, w, h := loadImage(path)
-	gl.GenTextures(1, &texture.ID)
+	gl.GenTextures(1, &texture.id)
 	texture.Bind()
-	gl.ActiveTexture(gl.TEXTURE0 + textureCount)
+	// May need if be necessary to draw several textures simultaneously
+	// gl.ActiveTexture(gl.TEXTURE0 + textureCount)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapMode)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapMode)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter)
@@ -38,7 +39,7 @@ func NewTexture(path string, textureCount uint32, minFilter, magFilter, wrapMode
 
 // Bind texture
 func (t *Texture) Bind() {
-	gl.BindTexture(gl.TEXTURE_2D, t.ID)
+	gl.BindTexture(gl.TEXTURE_2D, t.id)
 }
 
 // AddSubTexture ...

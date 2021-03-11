@@ -35,8 +35,8 @@ func main() {
 		1, 1, // top right
 		1, 0, // bottom right
 	}
-	texture := renderer.NewTexture("../res/textures/flint.png", 0, gl.LINEAR_MIPMAP_LINEAR, gl.NEAREST, gl.CLAMP_TO_EDGE)
-	texture1 := renderer.NewTexture("../res/textures/test.png", 0, gl.LINEAR_MIPMAP_LINEAR, gl.NEAREST, gl.CLAMP_TO_EDGE)
+	texture := renderer.NewTexture("../res/textures/flint.png", gl.LINEAR_MIPMAP_LINEAR, gl.NEAREST, gl.CLAMP_TO_EDGE)
+	texture1 := renderer.NewTexture("../res/textures/test.png", gl.LINEAR_MIPMAP_LINEAR, gl.NEAREST, gl.CLAMP_TO_EDGE)
 
 	vertices := []float32{
 		-0.5, -0.5, 0.0, // bottom left
@@ -49,24 +49,18 @@ func main() {
 		0, 1, 2, // first triangle
 		2, 3, 0, // first triangle
 	}
-	vdo := renderer.LoadVertexDataObject(shader, texture.ID)
+	vdo := renderer.LoadVertexDataObject(shader, texture)
 	texture.Bind()
 	vdo.AddVBO(vertices, 3, gl.STATIC_DRAW, 1)
 	vdo.AddVBO(texCoords, 2, gl.STATIC_DRAW, 1)
 	vdo.AddEBO(indices, gl.STATIC_DRAW)
-	vdo1 := renderer.LoadVertexDataObject(shader, texture1.ID)
+	
+	vdo1 := renderer.LoadVertexDataObject(shader, texture1)
 	vdo1.AddVBO(vertices, 3, gl.STATIC_DRAW, 1)
 	vdo1.AddVBO(texCoords, 2, gl.STATIC_DRAW, 1)
 	vdo1.AddEBO(indices, gl.STATIC_DRAW)
 
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
-
-	// trans = mgl32.HomogRotate3DZ(mgl32.DegToRad(45)).Mul4(trans)
-	// trans := mgl32.Ident4()
-	// trans = mgl32.Translate3D(0.5, -0.5, 0).Mul4(trans)
-	// m4 := [16]float32(trans)
-	// transformLoc := gl.GetUniformLocation(shader.ID, gl.Str("transform"+"\x00"))
-	// gl.UniformMatrix4fv(transformLoc, 1, false, &m4[0])
 
 	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
 	gl.ClearColor(0, 0, 0.3, 1)
