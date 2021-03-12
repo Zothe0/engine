@@ -8,12 +8,12 @@ type IndexBuffer struct {
 }
 
 // NewIndexBuffer constructor
-func NewIndexBuffer(data *[]uint32, drawMode uint32) (indexBuffer *IndexBuffer) {
-	indexBuffer = new(IndexBuffer)
-	gl.GenBuffers(1, &indexBuffer.id)
-	indexBuffer.Bind()
+func NewIndexBuffer(data *[]uint32, drawMode uint32) (ib *IndexBuffer) {
+	ib = new(IndexBuffer)
+	gl.GenBuffers(1, &ib.id)
+	ib.Bind()
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(*data)*4, gl.Ptr(*data), drawMode)
-	return indexBuffer
+	return ib
 }
 
 // Bind ...

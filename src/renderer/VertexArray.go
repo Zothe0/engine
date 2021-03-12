@@ -4,14 +4,23 @@ import "github.com/go-gl/gl/v4.6-core/gl"
 
 // VertexArray class
 type VertexArray struct {
-	id uint32
+	id          uint32
+	bufferCount uint32
 }
 
 // NewVertexArray constructor
-func NewVertexArray() (vertexArray *VertexArray) {
-	vertexArray = new(VertexArray)
-	gl.GenVertexArrays(1, &vertexArray.id)
-	return vertexArray
+func NewVertexArray() (v *VertexArray) {
+	v = new(VertexArray)
+	gl.GenVertexArrays(1, &v.id)
+	return v
+}
+func (v *VertexArray) AddBuffer(vb *VertexBuffer) {
+	vb.Bind()
+
+	gl.EnableVertexAttribArray(v.bufferCount)
+	gl.VertexAttribPointer(v.bufferCount, vb.vectorSize, gl.FLOAT, false, 0, nil)
+
+	v.bufferCount++
 }
 
 // Bind vertex array

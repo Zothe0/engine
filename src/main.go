@@ -1,7 +1,7 @@
 package main
 
 import (
-	"engine/src/renderer"
+	"engine/src/manager"
 	"fmt"
 	"log"
 
@@ -22,64 +22,57 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	window.GLCreateContext()
 	defer window.Destroy()
+	window.GLCreateContext()
+	window.SetResizable(true)
 	err = gl.Init()
 	if err != nil {
 		log.Fatal("Gl init error: ", err)
 	}
-	shader := renderer.NewShader("../res/shaders/defaultVertex.glsl", "../res/shaders/defaultFragment.glsl")
-	texCoords := []float32{
-		0, 0, // bottom left
-		0, 1, // top left
-		1, 1, // top right
-		1, 0, // bottom right
-	}
-	texture := renderer.NewTexture("../res/textures/flint.png", gl.LINEAR_MIPMAP_LINEAR, gl.NEAREST, gl.CLAMP_TO_EDGE)
-	texture1 := renderer.NewTexture("../res/textures/test.png", gl.LINEAR_MIPMAP_LINEAR, gl.NEAREST, gl.CLAMP_TO_EDGE)
-
-	vertices := []float32{
-		-0.5, -0.5, 0.0, // bottom left
-		-0.5, 0.5, 0.0, // top left
-		0.5, 0.5, 0.0, // top right
-		0.5, -0.5, 0.0, // bottom right
-	}
-
-	indices := []uint32{ // note that we start from 0!
-		0, 1, 2, // first triangle
-		2, 3, 0, // first triangle
-	}
-	sprite := renderer.LoadSprite(shader, texture)
-	texture.Bind()
-	sprite.AddVBO(&vertices, 3, gl.STATIC_DRAW)
-	sprite.AddVBO(&texCoords, 2, gl.STATIC_DRAW)
-	sprite.AddEBO(&indices, gl.STATIC_DRAW)
-
-	sprite1 := renderer.LoadSprite(shader, texture1)
-	sprite1.AddVBO(&vertices, 3, gl.STATIC_DRAW)
-	sprite1.AddVBO(&texCoords, 2, gl.STATIC_DRAW)
-	sprite1.AddEBO(&indices, gl.STATIC_DRAW)
+	rm := manager.NewResourceManager()
+	subTextures := []string{"violet", "blue", "brown"}
+	rm.AddShader("default", "../res/shaders/defaultVertex.glsl", "../res/shaders/defaultFragment.glsl")
+	rm.AddTexture("spirits", "../res/textures/spirits.png", &subTextures, 170, 220)
+	rm.AddSprite("unit", "default", "spirits", "blue")
+	rm.AddSprite("unitV", "default", "spirits", "violet")
+	sprite := rm.GetSprite("unit")
+	sprite1 := rm.GetSprite("unitV")
 
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
 
 	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
 	gl.ClearColor(0, 0, 0.3, 1)
 	timer := sdl.GetTicks()
-	for {
+
+	run := true
+	for run {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
+			switch t := event.(type) {
 			case *sdl.QuitEvent:
-				return
+				run = false
+			case *sdl.WindowEvent:
+				if t.Event == sdl.WINDOWEVENT_RESIZED {
+					w, h := window.GetSize()
+					gl.Viewport(0, 0, w, h)
+				}
 			}
 		}
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		m4 := translateMatrix(0.5, -0.5)
-		gl.UniformMatrix4fv(gl.GetUniformLocation(shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
+		gl.UniformMatrix4fv(gl.GetUniformLocation(sprite.Shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
 		sprite.Render()
 
 		m4 = translateMatrix(-0.5, 0.5)
-		gl.UniformMatrix4fv(gl.GetUniformLocation(shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
+		gl.UniformMatrix4fv(gl.GetUniformLocation(sprite.Shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
+		sprite.Render()
+
+		m4 = translateMatrix(0.5, 0.5)
+		gl.UniformMatrix4fv(gl.GetUniformLocation(sprite1.Shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
+		sprite1.Render()
+
+		m4 = translateMatrix(-0.5, -0.5)
+		gl.UniformMatrix4fv(gl.GetUniformLocation(sprite1.Shader.ID, gl.Str("transform"+"\x00")), 1, false, &m4[0])
 		sprite1.Render()
 
 		// Timer

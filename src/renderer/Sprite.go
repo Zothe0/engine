@@ -6,55 +6,45 @@ import (
 
 // Sprite ...
 type Sprite struct {
-	shader        *Shader
-	texture       *Texture
+	Shader  *Shader
+	texture *Texture
 	// Vertex Array Object is array of buffers which contains data necessary for draw vertices like texture, verticies coords etc.
 	vao           *VertexArray
 	elementsCount int32
-	vboCount      uint32
 }
 
-// LoadSprite constructor for Sprite
-func LoadSprite(shader *Shader, texture *Texture) (vdo *Sprite) {
-	vdo = new(Sprite)
-	vdo.shader = shader
-	vdo.texture = texture
-	vdo.vao = NewVertexArray()
-	return vdo
-}
+// NewSprite - constructor for Sprite
+func NewSprite(shader *Shader, texture *Texture, subTextureName string, vertices *[]float32, indexes *[]uint32) (s *Sprite) {
+	s = new(Sprite)
+	s.vao = NewVertexArray()
+	s.Shader = shader
+	s.texture = texture
+	s.elementsCount = int32(len(*indexes))
 
-// AddVBO ...
-func (v *Sprite) AddVBO(data *[]float32, vectorSize int32, drawMode uint32) {
-	v.vao.Bind()
+	subTexture := s.texture.GetSubTexture(subTextureName)
+	texCoords := []float32{
+		subTexture.leftBottomXY.X(), subTexture.leftBottomXY.Y(), // bottom left
+		subTexture.leftBottomXY.X(), subTexture.rightTopXY.Y(), // top left
+		subTexture.rightTopXY.X(), subTexture.rightTopXY.Y(), // top right
+		subTexture.rightTopXY.X(), subTexture.leftBottomXY.Y(), // bottom right
+	}
 
-	buffer := NewVertexBuffer(data, vectorSize, drawMode)
-	gl.EnableVertexAttribArray(v.vboCount)
-	gl.VertexAttribPointer(v.vboCount, vectorSize, gl.FLOAT, false, 0, nil)
+	s.vao.Bind()
+	vertexCoordsBuffer := NewVertexBuffer(vertices, 3, gl.STATIC_DRAW)
+	s.vao.AddBuffer(vertexCoordsBuffer)
+	texCoordsBuffer := NewVertexBuffer(&texCoords, 2, gl.STATIC_DRAW)
+	s.vao.AddBuffer(texCoordsBuffer)
 
-	v.vboCount++
-	v.vao.Unbind()
-	buffer.Unbind()
-}
+	ib := NewIndexBuffer(indexes, gl.STATIC_DRAW)
 
-// AddEBO ...
-func (v *Sprite) AddEBO(data *[]uint32, drawMode uint32) {
-	v.elementsCount = int32(len(*data))
-	v.vao.Bind()
-
-	buffer := NewIndexBuffer(data, drawMode)
-	// var buffer uint32
-	// gl.GenBuffers(1, &buffer)
-	// gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer)
-	// gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(*data)*4, gl.Ptr(data), drawMode)
-
-	v.vao.Unbind()
-	buffer.Unbind()
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
+	s.vao.Unbind()
+	ib.Unbind()
+	return s
 }
 
 // Render ...
 func (v *Sprite) Render() {
-	v.shader.Use()
+	v.Shader.Use()
 	v.texture.Bind()
 	v.vao.Bind()
 	gl.DrawElements(gl.TRIANGLES, v.elementsCount, gl.UNSIGNED_INT, nil)

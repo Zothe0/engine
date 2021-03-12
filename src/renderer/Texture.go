@@ -12,17 +12,17 @@ import (
 // Texture class
 type Texture struct {
 	id          uint32
-	width       uint32
-	height      uint32
+	Width       float32
+	Height      float32
 	subTextures map[string]*subTexture
 }
 
 // NewTexture constructor
-func NewTexture(path string, minFilter, magFilter, wrapMode int32) (texture *Texture) {
-	texture = new(Texture)
+func NewTexture(path string, minFilter, magFilter, wrapMode int32) (t *Texture) {
+	t = new(Texture)
 	pixels, w, h := loadImage(path)
-	gl.GenTextures(1, &texture.id)
-	texture.Bind()
+	gl.GenTextures(1, &t.id)
+	t.Bind()
 	// May need if be necessary to draw several textures simultaneously
 	// gl.ActiveTexture(gl.TEXTURE0 + textureCount)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapMode)
@@ -31,10 +31,11 @@ func NewTexture(path string, minFilter, magFilter, wrapMode int32) (texture *Tex
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter)
 	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, int32(w), int32(h), 0, gl.RGBA, gl.UNSIGNED_BYTE, gl.Ptr(pixels))
 	gl.GenerateMipmap(gl.TEXTURE_2D)
-	texture.width = w
-	texture.height = h
+	t.subTextures = make(map[string]*subTexture, 4*4)
+	t.Width = w
+	t.Height = h
 
-	return texture
+	return t
 }
 
 // Bind texture
@@ -49,19 +50,20 @@ func (t *Texture) AddSubTexture(name string, leftBottomXY, rightTopXY mgl32.Vec2
 		rightTopXY:   rightTopXY,
 	}
 }
+func (t *Texture) GetSubTexture(name string) *subTexture {
+	return t.subTextures[name]
+}
 
 type subTexture struct {
 	leftBottomXY mgl32.Vec2
 	rightTopXY   mgl32.Vec2
 }
-
-func newSubTexture() *subTexture {
-	var instance *subTexture
-
-	return instance
+type subTexSize struct {
+	width  float32
+	height float32
 }
 
-func loadImage(path string) ([]byte, uint32, uint32) {
+func loadImage(path string) ([]byte, float32, float32) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -103,5 +105,5 @@ func loadImage(path string) ([]byte, uint32, uint32) {
 			}
 		}
 	}
-	return pixels, uint32(w), uint32(h)
+	return pixels, float32(w), float32(h)
 }
