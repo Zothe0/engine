@@ -37,8 +37,8 @@ func main() {
 	}
 	rm := manager.InitResourceManager()
 	subTextures := []string{"violet", "blue", "brown"}
-	rm.AddShader("default", "../res/shaders/defaultVertex.glsl", "../res/shaders/defaultFragment.glsl")
-	rm.AddTexture("spirits", "../res/textures/spirits.png", &subTextures, 170, 220)
+	rm.AddShader("default", "./res/shaders/defaultVertex.glsl", "./res/shaders/defaultFragment.glsl")
+	rm.AddTexture("spirits", "./res/textures/spirits.png", &subTextures, 170, 220)
 	rm.AddSprite("unit", "default", "spirits", "blue")
 	rm.AddSprite("unitV", "default", "spirits", "violet")
 	sprite := rm.GetSprite("unit")
@@ -55,7 +55,10 @@ func main() {
 
 	projection := mgl32.Perspective(mgl32.DegToRad(45), width/height, 0.1, 100)
 	view := mgl32.Translate3D(0, 0, -3).Mul4(mgl32.Ident4())
-	model := mgl32.Translate3D(-1, -1, -10).Mul4(mgl32.Scale3D(0.5, 0.5, 0.5)).Mul4(mgl32.Ident4())
+	size := mgl32.Vec3{1.7, 2.2, 0}
+	model := mgl32.Ident4()
+	model = model.Mul4(mgl32.Translate3D(0, 0, -10))
+	model = model.Mul4(mgl32.Scale3D(size.X(), size.Y(), size.Z()))
 
 	run := true
 	for run {
@@ -68,6 +71,27 @@ func main() {
 					w, h := window.GetSize()
 					width, height = float32(w), float32(h)
 					gl.Viewport(0, 0, w, h)
+				}
+			case *sdl.KeyboardEvent:
+				if t.Type == sdl.KEYDOWN {
+					if t.Keysym.Scancode == sdl.SCANCODE_W {
+						view = view.Mul4(mgl32.Translate3D(0, 0, 0.25))
+					}
+					if t.Keysym.Scancode == sdl.SCANCODE_A {
+						view = view.Mul4(mgl32.Translate3D(0.25, 0, 0))
+					}
+					if t.Keysym.Scancode == sdl.SCANCODE_S {
+						view = view.Mul4(mgl32.Translate3D(0, 0, -0.25))
+					}
+					if t.Keysym.Scancode == sdl.SCANCODE_D {
+						view = view.Mul4(mgl32.Translate3D(-0.25, 0, 0))
+					}
+					if t.Keysym.Scancode == sdl.SCANCODE_LSHIFT || t.Keysym.Scancode == sdl.SCANCODE_C {
+						view = view.Mul4(mgl32.Translate3D(0, 0.25, 0))
+					}
+					if t.Keysym.Scancode == sdl.SCANCODE_SPACE {
+						view = view.Mul4(mgl32.Translate3D(0, -0.25, 0))
+					}
 				}
 			}
 		}
