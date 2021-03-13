@@ -2,6 +2,7 @@ package renderer
 
 import (
 	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 // Sprite ...
@@ -11,6 +12,9 @@ type Sprite struct {
 	// Vertex Array Object is array of buffers which contains data necessary for draw vertices like texture, verticies coords etc.
 	vao           *VertexArray
 	elementsCount int32
+	position      mgl32.Vec3
+	size          mgl32.Vec3
+	rotation      mgl32.Vec3
 }
 
 // InitSprite - constructor for Sprite
@@ -47,5 +51,6 @@ func (v *Sprite) Render() {
 	v.Shader.Use()
 	v.texture.Bind()
 	v.vao.Bind()
+
 	gl.DrawElements(gl.TRIANGLES, v.elementsCount, gl.UNSIGNED_INT, nil)
 }
