@@ -2,12 +2,11 @@ package main
 
 import (
 	"engine/src/manager"
-	"engine/src/utils"
 	"fmt"
 	"log"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
+	mgl "github.com/go-gl/mathgl/mgl32"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -38,28 +37,27 @@ func main() {
 	rm := manager.InitResourceManager()
 	subTextures := []string{"violet", "blue", "brown"}
 	rm.AddShader("default", "./res/shaders/defaultVertex.glsl", "./res/shaders/defaultFragment.glsl")
+	rm.AddShader("color", "./res/shaders/colorV.glsl", "./res/shaders/colorF.glsl")
 	rm.AddTexture("spirits", "./res/textures/spirits.png", &subTextures, 170, 220)
-	rm.AddSprite("unit", "default", "spirits", "blue")
+	rm.AddSprite("unit", "color", "spirits", "blue")
 	rm.AddSprite("unitV", "default", "spirits", "violet")
 	sprite := rm.GetSprite("unit")
 	// sprite1 := rm.GetSprite("unitV")
 
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
 
-	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
+	projection := mgl.Perspective(mgl.DegToRad(60), width/height, 0.1, 100)
+	view := mgl.Translate3D(0, 0, -3).Mul4(mgl.Ident4())
+	size := mgl.Vec3{2, 2, 2}
+	model := mgl.Ident4()
+	model = model.Mul4(mgl.Translate3D(2, 2, -10))
+	model = model.Mul4(mgl.Scale3D(size.X(), size.Y(), size.Z()))
+	model = model.Mul4(mgl.HomogRotate3DY(mgl.DegToRad(90)))
+
 	gl.ClearColor(0, 0, 0.3, 1)
+	gl.Enable(gl.DEPTH_TEST) // For 3D correct drawn
+	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
 	timer := sdl.GetTicks()
-	modelLoc := gl.GetUniformLocation(sprite.Shader.ID, utils.Cstr("model"))
-	viewLoc := gl.GetUniformLocation(sprite.Shader.ID, utils.Cstr("view"))
-	projectionLoc := gl.GetUniformLocation(sprite.Shader.ID, utils.Cstr("projection"))
-
-	projection := mgl32.Perspective(mgl32.DegToRad(45), width/height, 0.1, 100)
-	view := mgl32.Translate3D(0, 0, -3).Mul4(mgl32.Ident4())
-	size := mgl32.Vec3{1.7, 2.2, 0}
-	model := mgl32.Ident4()
-	model = model.Mul4(mgl32.Translate3D(0, 0, -10))
-	model = model.Mul4(mgl32.Scale3D(size.X(), size.Y(), size.Z()))
-
 	run := true
 	for run {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -75,46 +73,39 @@ func main() {
 			case *sdl.KeyboardEvent:
 				if t.Type == sdl.KEYDOWN {
 					if t.Keysym.Scancode == sdl.SCANCODE_W {
-						view = view.Mul4(mgl32.Translate3D(0, 0, 0.25))
+						view = view.Mul4(mgl.Translate3D(0, 0, 1))
 					}
 					if t.Keysym.Scancode == sdl.SCANCODE_A {
-						view = view.Mul4(mgl32.Translate3D(0.25, 0, 0))
+						view = view.Mul4(mgl.Translate3D(1, 0, 0))
 					}
 					if t.Keysym.Scancode == sdl.SCANCODE_S {
-						view = view.Mul4(mgl32.Translate3D(0, 0, -0.25))
+						view = view.Mul4(mgl.Translate3D(0, 0, -1))
 					}
 					if t.Keysym.Scancode == sdl.SCANCODE_D {
-						view = view.Mul4(mgl32.Translate3D(-0.25, 0, 0))
+						view = view.Mul4(mgl.Translate3D(-1, 0, 0))
 					}
 					if t.Keysym.Scancode == sdl.SCANCODE_LSHIFT || t.Keysym.Scancode == sdl.SCANCODE_C {
-						view = view.Mul4(mgl32.Translate3D(0, 0.25, 0))
+						view = view.Mul4(mgl.Translate3D(0, 1, 0))
 					}
 					if t.Keysym.Scancode == sdl.SCANCODE_SPACE {
-						view = view.Mul4(mgl32.Translate3D(0, -0.25, 0))
+						view = view.Mul4(mgl.Translate3D(0, -1, 0))
 					}
 				}
 			}
 		}
-		gl.Clear(gl.COLOR_BUFFER_BIT)
-		// Upload data to shader
-		gl.UniformMatrix4fv(projectionLoc, 1, false, utils.MatAddress(projection))
-		gl.UniformMatrix4fv(viewLoc, 1, false, utils.MatAddress(view))
-		gl.UniformMatrix4fv(modelLoc, 1, false, utils.MatAddress(model))
-		// Draw sprite
-		sprite.Render()
-
 		// Timer
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		updateTimer := sdl.GetTicks()
-		if updateTimer-timer > 1000 {
+		if updateTimer-timer > 10 {
+			model = model.Mul4(mgl.HomogRotate3DY(mgl.DegToRad(1)))
 			timer = updateTimer
 		}
+		// Upload data to shader
+		sprite.Shader.SetMat4("projection", projection)
+		sprite.Shader.SetMat4("view", view)
+		sprite.Shader.SetMat4("model", model)
+		// Draw sprite
+		sprite.Render()
 		window.GLSwap()
 	}
-}
-
-func translateMatrix(x, y float32) *[16]float32 {
-	matrix := mgl32.Ident4()
-	matrix = mgl32.Translate3D(x, y, 0).Mul4(matrix)
-	m4 := [16]float32(matrix)
-	return &m4
 }

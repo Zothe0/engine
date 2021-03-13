@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
+	mgl "github.com/go-gl/mathgl/mgl32"
 )
 
 // Texture class
@@ -44,7 +44,7 @@ func (t *Texture) Bind() {
 }
 
 // AddSubTexture ...
-func (t *Texture) AddSubTexture(name string, leftBottomXY, rightTopXY mgl32.Vec2) {
+func (t *Texture) AddSubTexture(name string, leftBottomXY, rightTopXY mgl.Vec2) {
 	t.subTextures[name] = &subTexture{
 		leftBottomXY: leftBottomXY,
 		rightTopXY:   rightTopXY,
@@ -55,8 +55,8 @@ func (t *Texture) GetSubTexture(name string) *subTexture {
 }
 
 type subTexture struct {
-	leftBottomXY mgl32.Vec2
-	rightTopXY   mgl32.Vec2
+	leftBottomXY mgl.Vec2
+	rightTopXY   mgl.Vec2
 }
 type subTexSize struct {
 	width  float32

@@ -1,10 +1,12 @@
 package renderer
 
 import (
+	"engine/src/utils"
 	"io/ioutil"
 	"log"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
+	mgl "github.com/go-gl/mathgl/mgl32"
 )
 
 // Shader ...
@@ -21,6 +23,13 @@ func InitShader(vertexPath, fragmentPath string) (s *Shader) {
 	s.fragmentSource = readShader(fragmentPath)
 	s.loadShaderProgram()
 	return s
+}
+
+func (s *Shader) SetMat4(name string, matrix mgl.Mat4) {
+	gl.UniformMatrix4fv(gl.GetUniformLocation(s.ID, utils.Cstr(name)), 1, false, utils.MatAddress(matrix))
+}
+func (s *Shader) SetFloat(name string, value float32) {
+	gl.Uniform1f(gl.GetUniformLocation(s.ID, utils.Cstr(name)), value)
 }
 
 // Compile shaders needs in one scope with the shader program linking

@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
-	"github.com/go-gl/mathgl/mgl32"
+	mgl "github.com/go-gl/mathgl/mgl32"
 )
 
 var (
@@ -21,6 +21,48 @@ var (
 		0, 1, 2, // first triangle
 		2, 3, 0, // first triangle
 	}
+	cubeVertices = []float32{
+		-0.5, -0.5, 0.5, // bottom left
+		-0.5, 0.5, 0.5, // top left
+		0.5, 0.5, 0.5, // top right
+		0.5, -0.5, 0.5, // bottom right
+
+		-0.5, -0.5, -0.5, // bottom left
+		-0.5, 0.5, -0.5, // top left
+		0.5, 0.5, -0.5, // top right
+		0.5, -0.5, -0.5, // bottom right
+	}
+	cubeColors = []float32{
+		1, 0.5, 0.5, // bottom left
+		0.5, 1, 0.5, // top left
+		0.5, 0.5, 1, // top right
+		0.5, 0, 1, // bottom right
+
+		0.5, 0.5, 1, // bottom left
+		0.5, 1, 0.5, // top left
+		1, 0.5, 0.5, // top right
+		0.5, 0, 0.5, // bottom right
+	}
+	cubeIndexes = []uint32{ // note that we start from 0!
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// left
+		0, 1, 5,
+		5, 4, 0,
+		// bottom
+		0, 4, 7,
+		7, 3, 0,
+		// top
+		6, 2, 1,
+		1, 5, 6,
+		// back
+		6, 2, 3,
+		3, 7, 6,
+		// right
+		6, 5, 4,
+		4, 7, 6,
+	}
 )
 
 // ResourceManager class
@@ -29,6 +71,7 @@ type ResourceManager struct {
 	texturesMap map[string]*renderer.Texture
 	spritesMap  map[string]*renderer.Sprite
 }
+
 // InitResourceManager - constructor
 func InitResourceManager() (rm *ResourceManager) {
 	rm = new(ResourceManager)
@@ -53,7 +96,7 @@ func (r *ResourceManager) AddTexture(name, path string, subTextures *[]string, s
 	xStep, yStep := subTexWidth/texture.Width, (subTexHeight / texture.Height)
 	var x, y float32
 	for _, val := range *subTextures {
-		texture.AddSubTexture(val, mgl32.Vec2{x, y}, mgl32.Vec2{x + xStep, y + yStep})
+		texture.AddSubTexture(val, mgl.Vec2{x, y}, mgl.Vec2{x + xStep, y + yStep})
 		if x+xStep == texture.Width {
 			x = 0
 			if y+yStep < texture.Height {
@@ -74,7 +117,7 @@ func (r *ResourceManager) GetTexture(name string) *renderer.Texture {
 	return t
 }
 func (r *ResourceManager) AddSprite(name, shader, texture, subTexture string) {
-	r.spritesMap[name] = renderer.InitSprite(r.shadersMap[shader], r.texturesMap[texture], subTexture, &defVertices, &defIndexes)
+	r.spritesMap[name] = renderer.InitSprite(r.shadersMap[shader], r.texturesMap[texture], subTexture, &cubeVertices, &cubeColors, &cubeIndexes)
 }
 func (r *ResourceManager) GetSprite(name string) *renderer.Sprite {
 	s := r.spritesMap[name]

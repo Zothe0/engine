@@ -1,2 +1,2 @@
 xcopy res build\\res /e /q /y
-go build -o build/game.exe  main.go 
+go build -tags static -ldflags "-s -w" -o build/game.exe
