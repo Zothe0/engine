@@ -52,6 +52,11 @@ func main() {
 	modelLoc := gl.GetUniformLocation(sprite.Shader.ID, utils.Cstr("model"))
 	viewLoc := gl.GetUniformLocation(sprite.Shader.ID, utils.Cstr("view"))
 	projectionLoc := gl.GetUniformLocation(sprite.Shader.ID, utils.Cstr("projection"))
+
+	projection := mgl32.Perspective(mgl32.DegToRad(45), width/height, 0.1, 100)
+	view := mgl32.Translate3D(0, 0, -3).Mul4(mgl32.Ident4())
+	model := mgl32.Translate3D(-1, -1, -10).Mul4(mgl32.Scale3D(0.5, 0.5, 0.5)).Mul4(mgl32.Ident4())
+
 	run := true
 	for run {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -67,13 +72,11 @@ func main() {
 			}
 		}
 		gl.Clear(gl.COLOR_BUFFER_BIT)
-
-		model := mgl32.Ident4()
-		gl.UniformMatrix4fv(modelLoc, 1, false, utils.MatAddress(model))
-		view := mgl32.Translate3D(0, 0, -3).Mul4(mgl32.Ident4())
-		gl.UniformMatrix4fv(viewLoc, 1, false, utils.MatAddress(view))
-		projection := mgl32.Perspective(mgl32.DegToRad(45), width/height, 0.1, 100)
+		// Upload data to shader
 		gl.UniformMatrix4fv(projectionLoc, 1, false, utils.MatAddress(projection))
+		gl.UniformMatrix4fv(viewLoc, 1, false, utils.MatAddress(view))
+		gl.UniformMatrix4fv(modelLoc, 1, false, utils.MatAddress(model))
+		// Draw sprite
 		sprite.Render()
 
 		// Timer
