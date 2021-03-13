@@ -18,7 +18,7 @@ func main() {
 	defer sdl.Quit()
 
 	window, err := sdl.CreateWindow("RPG", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		800, 600, sdl.WINDOW_OPENGL)
+		600, 600, sdl.WINDOW_OPENGL)
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Gl init error: ", err)
 	}
-	rm := manager.NewResourceManager()
+	rm := manager.InitResourceManager()
 	subTextures := []string{"violet", "blue", "brown"}
 	rm.AddShader("default", "../res/shaders/defaultVertex.glsl", "../res/shaders/defaultFragment.glsl")
 	rm.AddTexture("spirits", "../res/textures/spirits.png", &subTextures, 170, 220)

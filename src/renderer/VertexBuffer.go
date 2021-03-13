@@ -11,8 +11,8 @@ type VertexBuffer struct {
 	size       int
 }
 
-// NewVertexBuffer constructor. On load it's stay binded
-func NewVertexBuffer(data *[]float32, vectorSize int32, drawMode uint32) (vb *VertexBuffer) {
+// InitVertexBuffer - constructor.
+func InitVertexBuffer(data *[]float32, vectorSize int32, drawMode uint32) (vb *VertexBuffer) {
 	vb = new(VertexBuffer)
 	vb.size = len(*data) * 4
 	vb.vectorSize = vectorSize

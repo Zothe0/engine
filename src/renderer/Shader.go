@@ -14,8 +14,8 @@ type Shader struct {
 	fragmentSource string
 }
 
-// NewShader constructor for shader
-func NewShader(vertexPath, fragmentPath string) (s *Shader) {
+// InitShader - constructor for shader
+func InitShader(vertexPath, fragmentPath string) (s *Shader) {
 	s = new(Shader)
 	s.vertexSource = readShader(vertexPath)
 	s.fragmentSource = readShader(fragmentPath)

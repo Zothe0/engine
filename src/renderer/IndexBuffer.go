@@ -7,8 +7,8 @@ type IndexBuffer struct {
 	id uint32
 }
 
-// NewIndexBuffer constructor
-func NewIndexBuffer(data *[]uint32, drawMode uint32) (ib *IndexBuffer) {
+// InitIndexBuffer - constructor
+func InitIndexBuffer(data *[]uint32, drawMode uint32) (ib *IndexBuffer) {
 	ib = new(IndexBuffer)
 	gl.GenBuffers(1, &ib.id)
 	ib.Bind()

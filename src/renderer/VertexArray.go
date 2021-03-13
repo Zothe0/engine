@@ -8,8 +8,8 @@ type VertexArray struct {
 	bufferCount uint32
 }
 
-// NewVertexArray constructor
-func NewVertexArray() (v *VertexArray) {
+// InitVertexArray - constructor
+func InitVertexArray() (v *VertexArray) {
 	v = new(VertexArray)
 	gl.GenVertexArrays(1, &v.id)
 	return v

@@ -17,8 +17,8 @@ type Texture struct {
 	subTextures map[string]*subTexture
 }
 
-// NewTexture constructor
-func NewTexture(path string, minFilter, magFilter, wrapMode int32) (t *Texture) {
+// InitTexture - constructor
+func InitTexture(path string, minFilter, magFilter, wrapMode int32) (t *Texture) {
 	t = new(Texture)
 	pixels, w, h := loadImage(path)
 	gl.GenTextures(1, &t.id)

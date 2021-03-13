@@ -13,10 +13,10 @@ type Sprite struct {
 	elementsCount int32
 }
 
-// NewSprite - constructor for Sprite
-func NewSprite(shader *Shader, texture *Texture, subTextureName string, vertices *[]float32, indexes *[]uint32) (s *Sprite) {
+// InitSprite - constructor for Sprite
+func InitSprite(shader *Shader, texture *Texture, subTextureName string, vertices *[]float32, indexes *[]uint32) (s *Sprite) {
 	s = new(Sprite)
-	s.vao = NewVertexArray()
+	s.vao = InitVertexArray()
 	s.Shader = shader
 	s.texture = texture
 	s.elementsCount = int32(len(*indexes))
@@ -30,12 +30,12 @@ func NewSprite(shader *Shader, texture *Texture, subTextureName string, vertices
 	}
 
 	s.vao.Bind()
-	vertexCoordsBuffer := NewVertexBuffer(vertices, 3, gl.STATIC_DRAW)
+	vertexCoordsBuffer := InitVertexBuffer(vertices, 3, gl.STATIC_DRAW)
 	s.vao.AddBuffer(vertexCoordsBuffer)
-	texCoordsBuffer := NewVertexBuffer(&texCoords, 2, gl.STATIC_DRAW)
+	texCoordsBuffer := InitVertexBuffer(&texCoords, 2, gl.STATIC_DRAW)
 	s.vao.AddBuffer(texCoordsBuffer)
 
-	ib := NewIndexBuffer(indexes, gl.STATIC_DRAW)
+	ib := InitIndexBuffer(indexes, gl.STATIC_DRAW)
 
 	s.vao.Unbind()
 	ib.Unbind()

@@ -29,8 +29,8 @@ type ResourceManager struct {
 	texturesMap map[string]*renderer.Texture
 	spritesMap  map[string]*renderer.Sprite
 }
-
-func NewResourceManager() (rm *ResourceManager) {
+// InitResourceManager - constructor
+func InitResourceManager() (rm *ResourceManager) {
 	rm = new(ResourceManager)
 	rm.shadersMap = make(map[string]*renderer.Shader, utils.Sizeof(renderer.Shader{}))
 	rm.texturesMap = make(map[string]*renderer.Texture, utils.Sizeof(renderer.Texture{}))
@@ -38,7 +38,7 @@ func NewResourceManager() (rm *ResourceManager) {
 	return rm
 }
 func (r *ResourceManager) AddShader(name, vertexPath, fragmentPath string) {
-	r.shadersMap[name] = renderer.NewShader(vertexPath, fragmentPath)
+	r.shadersMap[name] = renderer.InitShader(vertexPath, fragmentPath)
 }
 func (r *ResourceManager) GetShader(name string) *renderer.Shader {
 	s := r.shadersMap[name]
@@ -48,7 +48,7 @@ func (r *ResourceManager) GetShader(name string) *renderer.Shader {
 	return s
 }
 func (r *ResourceManager) AddTexture(name, path string, subTextures *[]string, subTexWidth, subTexHeight float32) {
-	r.texturesMap[name] = renderer.NewTexture(path, gl.LINEAR_MIPMAP_LINEAR, gl.LINEAR, gl.CLAMP_TO_EDGE)
+	r.texturesMap[name] = renderer.InitTexture(path, gl.LINEAR_MIPMAP_LINEAR, gl.LINEAR, gl.CLAMP_TO_EDGE)
 	texture := r.texturesMap[name]
 	xStep, yStep := subTexWidth/texture.Width, (subTexHeight / texture.Height)
 	var x, y float32
@@ -74,7 +74,7 @@ func (r *ResourceManager) GetTexture(name string) *renderer.Texture {
 	return t
 }
 func (r *ResourceManager) AddSprite(name, shader, texture, subTexture string) {
-	r.spritesMap[name] = renderer.NewSprite(r.shadersMap[shader], r.texturesMap[texture], subTexture, &defVertices, &defIndexes)
+	r.spritesMap[name] = renderer.InitSprite(r.shadersMap[shader], r.texturesMap[texture], subTexture, &defVertices, &defIndexes)
 }
 func (r *ResourceManager) GetSprite(name string) *renderer.Sprite {
 	s := r.spritesMap[name]
