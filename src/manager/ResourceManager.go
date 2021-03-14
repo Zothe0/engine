@@ -5,7 +5,7 @@ import (
 	"engine/src/utils"
 	"log"
 
-	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 	mgl "github.com/go-gl/mathgl/mgl32"
 )
 

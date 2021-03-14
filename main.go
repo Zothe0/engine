@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/gl/v4.1-core/gl"
 	mgl "github.com/go-gl/mathgl/mgl32"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -21,6 +21,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer sdl.Quit()
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 1)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE)
+	
 	window, err := sdl.CreateWindow("Game", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		int32(width), int32(height), sdl.WINDOW_OPENGL|sdl.WINDOW_RESIZABLE)
 	if err != nil {
@@ -30,12 +34,8 @@ func main() {
 	window.GLCreateContext()
 	window.SetResizable(true)
 	window.SetMinimumSize(800, 600)
-	dm, err := sdl.GetCurrentDisplayMode(0)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Monitor w: ", dm.W)
-	fmt.Println("Monitor h: ", dm.H)
+
+
 
 	err = gl.Init()
 	if err != nil {
