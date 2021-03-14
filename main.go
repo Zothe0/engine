@@ -12,7 +12,7 @@ import (
 
 var (
 	width  float32 = 800
-	height float32 = 800
+	height float32 = 600
 )
 
 func main() {
@@ -21,15 +21,22 @@ func main() {
 		log.Fatal(err)
 	}
 	defer sdl.Quit()
-
 	window, err := sdl.CreateWindow("Game", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		int32(width), int32(height), sdl.WINDOW_OPENGL)
+		int32(width), int32(height), sdl.WINDOW_OPENGL|sdl.WINDOW_RESIZABLE)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer window.Destroy()
 	window.GLCreateContext()
 	window.SetResizable(true)
+	window.SetMinimumSize(800, 600)
+	dm, err := sdl.GetCurrentDisplayMode(0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Monitor w: ", dm.W)
+	fmt.Println("Monitor h: ", dm.H)
+
 	err = gl.Init()
 	if err != nil {
 		log.Fatal("Gl init error: ", err)
@@ -52,7 +59,8 @@ func main() {
 	model := mgl.Ident4()
 	model = model.Mul4(mgl.Translate3D(2, 2, -10))
 	model = model.Mul4(mgl.Scale3D(size.X(), size.Y(), size.Z()))
-	model = model.Mul4(mgl.HomogRotate3DY(mgl.DegToRad(90)))
+	model = model.Mul4(mgl.HomogRotate3DY(mgl.DegToRad(30)))
+	model1 := mgl.Ident4().Mul4(mgl.Translate3D(-5, -2, 1)).Mul4(mgl.Scale3D(0.5, 0.5, 0.5)).Mul4(mgl.HomogRotate3DX(mgl.DegToRad(180)))
 
 	gl.ClearColor(0, 0, 0.3, 1)
 	gl.Enable(gl.DEPTH_TEST) // For 3D correct drawn
@@ -65,9 +73,10 @@ func main() {
 			case *sdl.QuitEvent:
 				run = false
 			case *sdl.WindowEvent:
-				if t.Event == sdl.WINDOWEVENT_RESIZED {
+				if t.Event == sdl.WINDOWEVENT_RESIZED || t.Event == sdl.WINDOWEVENT_SIZE_CHANGED {
 					w, h := window.GetSize()
 					width, height = float32(w), float32(h)
+					projection = mgl.Perspective(mgl.DegToRad(60), width/height, 0.1, 100)
 					gl.Viewport(0, 0, w, h)
 				}
 			case *sdl.KeyboardEvent:
@@ -90,6 +99,12 @@ func main() {
 					if t.Keysym.Scancode == sdl.SCANCODE_SPACE {
 						view = view.Mul4(mgl.Translate3D(0, -1, 0))
 					}
+					if t.Keysym.Scancode == sdl.SCANCODE_F {
+						window.SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
+					}
+					if t.Keysym.Scancode == sdl.SCANCODE_ESCAPE {
+						window.SetFullscreen(0)
+					}
 				}
 			}
 		}
@@ -98,6 +113,7 @@ func main() {
 		updateTimer := sdl.GetTicks()
 		if updateTimer-timer > 10 {
 			model = model.Mul4(mgl.HomogRotate3DY(mgl.DegToRad(1)))
+			model1 = model1.Mul4(mgl.HomogRotate3DY(mgl.DegToRad(2)))
 			timer = updateTimer
 		}
 		// Upload data to shader
@@ -106,6 +122,10 @@ func main() {
 		sprite.Shader.SetMat4("model", model)
 		// Draw sprite
 		sprite.Render()
+
+		sprite.Shader.SetMat4("model", model1)
+		sprite.Render()
+
 		window.GLSwap()
 	}
 }
