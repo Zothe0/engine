@@ -76,9 +76,11 @@ func (g *Game) init() {
 
 	g.projectionMat = mgl.Perspective(mgl.DegToRad(60), float32(g.width/g.height), 0.1, 100)
 	g.cameraPosition = mgl.Vec3{1, 1, 10}
-	cameraFront := mgl.Vec3{0, 1, 0}
-	cameraUp := mgl.Vec3{0, 1, 0}
-	g.viewMat = mgl.LookAtV(g.cameraPosition, g.cameraPosition.Add(cameraFront), cameraUp)
+	// cameraFront := mgl.Vec3{0, 1, 0}
+	// cameraUp := mgl.Vec3{0, 1, 0}
+	// g.viewMat = mgl.LookAtV(g.cameraPosition, g.cameraPosition.Add(cameraFront), cameraUp)
+	g.viewMat = mgl.Ident4().Mul4(mgl.Translate3D(0, 0, -5))
+
 	gl.ClearColor(0, 0, 0.3, 1)
 	gl.Enable(gl.DEPTH_TEST) // For 3D correct drawn
 	// gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
@@ -100,7 +102,7 @@ func (g *Game) mainloop() {
 			case *sdl.QuitEvent:
 				run = false
 			case *sdl.WindowEvent:
-				if t.Event == sdl.WINDOWEVENT_RESIZED || t.Event == sdl.WINDOWEVENT_SIZE_CHANGED {
+				if t.Event == sdl.WINDOWEVENT_RESIZED || t.Event == sdl.WINDOWEVENT_SIZE_CHANGED || t.Event == sdl.WINDOWEVENT_MAXIMIZED {
 					g.width, g.height = g.pWindow.GetSize()
 					g.projectionMat = mgl.Perspective(mgl.DegToRad(60), float32(g.width/g.height), 0.1, 100)
 					gl.Viewport(0, 0, g.width, g.height)
