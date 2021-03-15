@@ -1,4 +1,4 @@
-module engineGL
+module engine
 
 go 1.15
 
