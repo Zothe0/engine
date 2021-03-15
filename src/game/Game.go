@@ -102,9 +102,9 @@ func (g *Game) mainloop() {
 			case *sdl.QuitEvent:
 				run = false
 			case *sdl.WindowEvent:
-				if t.Event == sdl.WINDOWEVENT_RESIZED || t.Event == sdl.WINDOWEVENT_SIZE_CHANGED || t.Event == sdl.WINDOWEVENT_MAXIMIZED {
+				if t.Event == sdl.WINDOWEVENT_RESIZED || t.Event == sdl.WINDOWEVENT_SIZE_CHANGED {
 					g.width, g.height = g.pWindow.GetSize()
-					g.projectionMat = mgl.Perspective(mgl.DegToRad(60), float32(g.width/g.height), 0.1, 100)
+					g.projectionMat = mgl.Perspective(mgl.DegToRad(60), float32(g.width)/float32(g.height), 0.1, 100)
 					gl.Viewport(0, 0, g.width, g.height)
 				}
 			case *sdl.KeyboardEvent:
