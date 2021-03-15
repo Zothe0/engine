@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v2.1/gl"
 	mgl "github.com/go-gl/mathgl/mgl32"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -18,13 +18,13 @@ var (
 )
 
 func main() {
-
+	// game.InitGame()
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		log.Fatal(err)
 	}
 	defer sdl.Quit()
 	sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4)
-	sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 1)
+	sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 6)
 	sdl.GLSetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE)
 
 	window, err := sdl.CreateWindow("Game", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
@@ -46,9 +46,8 @@ func main() {
 	rm.AddShader("default", "./res/shaders/defaultVertex.glsl", "./res/shaders/defaultFragment.glsl")
 	rm.AddShader("color", "./res/shaders/colorV.glsl", "./res/shaders/colorF.glsl")
 	rm.AddTexture("spirits", "./res/textures/spirits.png", &subTextures, 170, 220)
-	rm.AddSprite("unit", "color", "spirits", "blue")
-	rm.AddSprite("unitV", "default", "spirits", "violet")
-	sprite := rm.GetSprite("unit")
+	sprite := rm.AddSprite("unit", "color", "spirits", "blue")
+	// rm.AddSprite("unitV", "default", "spirits", "violet")
 	// sprite1 := rm.GetSprite("unitV")
 
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
@@ -65,7 +64,7 @@ func main() {
 	cameraPosition = mgl.Vec3{1, 1, 10}
 	cameraFront := mgl.Vec3{-3, 3, 0}
 	cameraUp := mgl.Vec3{0, 1, 0}
-	var cameraSpeed float32 = 0.25
+	// var cameraSpeed float32 = 0.25
 	view = mgl.LookAtV(cameraPosition, cameraPosition.Add(cameraFront), cameraUp)
 	// view := mgl.Ident4().Mul4(mgl.Translate3D(0, 0, -5))
 

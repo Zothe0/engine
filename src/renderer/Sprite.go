@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v4.6-core/gl"
 	mgl "github.com/go-gl/mathgl/mgl32"
 )
 
@@ -56,7 +56,9 @@ func InitSprite(shader *Shader, texture *Texture, subTextureName string, vertice
 // Render ...
 func (v *Sprite) Render() {
 	v.Shader.Use()
-	v.texture.Bind()
+	if v.texture != nil {
+		v.texture.Bind()
+	}
 	v.vao.Bind()
 
 	gl.DrawElements(gl.TRIANGLES, v.elementsCount, gl.UNSIGNED_INT, nil)

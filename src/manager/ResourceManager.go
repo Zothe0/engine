@@ -5,7 +5,7 @@ import (
 	"engine/src/utils"
 	"log"
 
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/v4.6-core/gl"
 	mgl "github.com/go-gl/mathgl/mgl32"
 )
 
@@ -116,8 +116,9 @@ func (r *ResourceManager) GetTexture(name string) *renderer.Texture {
 	}
 	return t
 }
-func (r *ResourceManager) AddSprite(name, shader, texture, subTexture string) {
+func (r *ResourceManager) AddSprite(name, shader, texture, subTexture string) *renderer.Sprite {
 	r.spritesMap[name] = renderer.InitSprite(r.shadersMap[shader], r.texturesMap[texture], subTexture, &cubeVertices, &cubeColors, &cubeIndexes)
+	return r.spritesMap[name]
 }
 func (r *ResourceManager) GetSprite(name string) *renderer.Sprite {
 	s := r.spritesMap[name]
