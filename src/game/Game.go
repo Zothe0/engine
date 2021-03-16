@@ -75,8 +75,8 @@ func (g *Game) init() {
 	fmt.Println("OpenGL version:", gl.GoStr(gl.GetString(gl.VERSION)))
 
 	g.projectionMat = mgl.Perspective(mgl.DegToRad(60), float32(g.width/g.height), 0.1, 100)
-	g.cameraPosition = mgl.Vec3{1, 1, 10}
-	// cameraFront := mgl.Vec3{0, 1, 0}
+	// g.cameraPosition = mgl.Vec3{0, 0, 5}
+	// cameraFront := mgl.Vec3{0, 0, 0}
 	// cameraUp := mgl.Vec3{0, 1, 0}
 	// g.viewMat = mgl.LookAtV(g.cameraPosition, g.cameraPosition.Add(cameraFront), cameraUp)
 	g.viewMat = mgl.Ident4().Mul4(mgl.Translate3D(0, 0, -5))
@@ -116,6 +116,7 @@ func (g *Game) mainloop() {
 				}
 			}
 		}
+		g.keyEventHandle()
 		// Timer
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		updateTimer := sdl.GetTicks()
@@ -138,6 +139,32 @@ func (g *Game) mainloop() {
 		}
 
 		g.pWindow.GLSwap()
+	}
+}
+func (g *Game) keyEventHandle() {
+	if g.KeyMap[sdl.SCANCODE_W] {
+		g.viewMat = g.viewMat.Mul4(mgl.Translate3D(0, 0, 1))
+	}
+	if g.KeyMap[sdl.SCANCODE_S] {
+		g.viewMat = g.viewMat.Mul4(mgl.Translate3D(0, 0, -1))
+	}
+	if g.KeyMap[sdl.SCANCODE_A] {
+		g.viewMat = g.viewMat.Mul4(mgl.Translate3D(1, 0, 0))
+	}
+	if g.KeyMap[sdl.SCANCODE_D] {
+		g.viewMat = g.viewMat.Mul4(mgl.Translate3D(-1, 0, 0))
+	}
+	if g.KeyMap[sdl.SCANCODE_LSHIFT] {
+		g.viewMat = g.viewMat.Mul4(mgl.Translate3D(0, 1, 0))
+	}
+	if g.KeyMap[sdl.SCANCODE_SPACE] {
+		g.viewMat = g.viewMat.Mul4(mgl.Translate3D(0, -1, 0))
+	}
+	if g.KeyMap[sdl.SCANCODE_F] {
+		g.pWindow.SetFullscreen(sdl.WINDOW_FULLSCREEN_DESKTOP)
+	}
+	if g.KeyMap[sdl.SCANCODE_ESCAPE] {
+		g.pWindow.SetFullscreen(0)
 	}
 }
 func (g *Game) cleanup() {
